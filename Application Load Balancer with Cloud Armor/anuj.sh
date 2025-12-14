@@ -44,23 +44,17 @@ stop_spinner() {
         wait "$SPINNER_PID" 2>/dev/null || true
         SPINNER_PID=""
     fi
-    printf " %s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+    printf " %s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done!${RESET_FORMAT}"
 }
-
-echo
-echo "${CYAN_TEXT}${BOLD_TEXT}=========================================${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}   DR ABHISHEK SUBSCRIBE FOR MORE     ${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}=========================================${RESET_FORMAT}"
-echo
 
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter the first REGION: ${RESET_FORMAT}" REGION1
 echo "${GREEN_TEXT}${BOLD_TEXT}First REGION set to:${RESET_FORMAT} ${CYAN_TEXT}${BOLD_TEXT}$REGION1${RESET_FORMAT}"
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter the second REGION: ${RESET_FORMAT}" REGION2
 echo "${GREEN_TEXT}${BOLD_TEXT}Second REGION set to:${RESET_FORMAT} ${CYAN_TEXT}${BOLD_TEXT}$REGION2${RESET_FORMAT}"
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 # Export variables after collecting input
@@ -134,7 +128,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for health check creation to complete...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${GREEN_TEXT}${BOLD_TEXT}Configuring backend services and associating instance groups...${RESET_FORMAT}"
@@ -191,7 +185,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for backend service creation to complete...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Setting up the URL map to direct traffic to the backend service...${RESET_FORMAT}"
@@ -207,7 +201,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for URL map creation to complete...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Creating the primary target HTTP proxy for the load balancer...${RESET_FORMAT}"
@@ -223,7 +217,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for target proxy creation to complete...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Establishing the primary global forwarding rule (IPv4)...${RESET_FORMAT}"
@@ -244,7 +238,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for forwarding rule creation to complete...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Creating the secondary target HTTP proxy...${RESET_FORMAT}"
@@ -260,7 +254,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for second target proxy creation...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Establishing the secondary global forwarding rule (IPv6)...${RESET_FORMAT}"
@@ -281,7 +275,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for second forwarding rule creation...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Assigning named port 'http:80' to the instance group in region: ${CYAN_TEXT}${BOLD_TEXT}$REGION2${RESET_FORMAT}${YELLOW_TEXT}${BOLD_TEXT}...${RESET_FORMAT}"
@@ -301,7 +295,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for named port configuration...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Assigning named port 'http:80' to the instance group in region: ${CYAN_TEXT}${BOLD_TEXT}$REGION1${RESET_FORMAT}${YELLOW_TEXT}${BOLD_TEXT}...${RESET_FORMAT}"
@@ -321,7 +315,7 @@ curl -X POST -H "Content-Type: application/json" \
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for named port configuration...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}Retrieving the IP address of the load balancer...${RESET_FORMAT}"
@@ -345,14 +339,14 @@ echo
 echo "${GREEN_TEXT}${BOLD_TEXT}After creating the VM, please enter its external IP address below:${RESET_FORMAT}"
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter the EXTERNAL IP address of your siege VM: ${RESET_FORMAT}" EXTERNAL_IP
 echo "${GREEN_TEXT}${BOLD_TEXT}External IP set to:${RESET_FORMAT} ${CYAN_TEXT}${BOLD_TEXT}$EXTERNAL_IP${RESET_FORMAT}"
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 # ================= ADDITIONAL: ASK FOR VM ZONE =================
 echo "${YELLOW_TEXT}${BOLD_TEXT}For SSH connection purposes, please also provide the zone where you created the siege VM:${RESET_FORMAT}"
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter the ZONE of your siege VM (e.g., us-central1-a): ${RESET_FORMAT}" VM_ZONE
 echo "${GREEN_TEXT}${BOLD_TEXT}VM Zone set to:${RESET_FORMAT} ${CYAN_TEXT}${BOLD_TEXT}$VM_ZONE${RESET_FORMAT}"
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 # ================= STEP 1: LOAD TESTING INSTRUCTIONS (BEFORE ARMOR) =================
@@ -379,7 +373,7 @@ echo "${YELLOW_TEXT}${BOLD_TEXT}Note: This load test should show SUCCESSFUL resp
 echo "${YELLOW_TEXT}${BOLD_TEXT}Press Enter AFTER you have completed the load testing...${RESET_FORMAT}"
 read -p ""
 echo "${GREEN_TEXT}${BOLD_TEXT}Load testing completed!${RESET_FORMAT}"
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 # ================= STEP 2: CLOUD ARMOR POLICY CREATION =================
@@ -435,7 +429,7 @@ curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Co
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for security policy creation...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 echo "${RED_TEXT}${BOLD_TEXT}Attaching the 'denylist-siege' security policy to the 'http-backend' service...${RESET_FORMAT}"
@@ -448,7 +442,7 @@ curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Co
 stop_spinner
 echo "${YELLOW_TEXT}${BOLD_TEXT}Waiting for security policy attachment...${RESET_FORMAT}"
 sleep 60
-printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! Subscribe to Dr Abhishek ❤️${RESET_FORMAT}"
+printf "%s\n" "${GREEN_TEXT}${BOLD_TEXT}✔ Done! ${RESET_FORMAT}"
 echo
 
 # ================= STEP 3: VERIFICATION LOAD TESTING (AFTER ARMOR) =================
@@ -471,8 +465,3 @@ echo
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}              LAB COMPLETED SUCCESSFULLY!              ${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}Welcome to Dr. Abhishek Cloud Tutorials${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}Subscribe for more cloud content: https://www.youtube.com/@drabhishek.5460${RESET_FORMAT}"
-echo
