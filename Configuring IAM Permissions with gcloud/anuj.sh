@@ -19,10 +19,6 @@ clear
 
 # Welcome Banner
 echo
-echo "${CYAN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}          DR. ABHISHEK'S CLOUD IAM LAB                    ${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
-echo
 echo "${WHITE_TEXT}This lab demonstrates IAM role management and VM instance creation${RESET_FORMAT}"
 echo "${WHITE_TEXT}in Google Cloud Platform${RESET_FORMAT}"
 echo
@@ -181,6 +177,4 @@ echo "${GREEN_TEXT}${BOLD_TEXT}             LAB EXECUTION COMPLETED SUCCESSFULLY
 echo "${GREEN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
 echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💡 For more cloud tutorials and labs:${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}Subscribe to Dr. Abhishek's YouTube Channel${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@drabhishek.5460${RESET_FORMAT}"
 echo
