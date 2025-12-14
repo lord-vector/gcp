@@ -2,6 +2,7 @@
 
 export REGION="${ZONE%-*}"
 
+
 gcloud auth list
 source <(gsutil cat gs://cloud-training/gsp318/marking/setup_marking_v2.sh)
 gsutil cp gs://spls/gsp318/valkyrie-app.tgz .
