@@ -23,11 +23,6 @@ RESET=`tput sgr0`
 
 clear
 
-
-echo "${BLUE}${BOLD}====================================================================${RESET}"
-echo "${BLUE}${BOLD}                  Dr. Abhishek Cloud Tutorials                     ${RESET}"
-echo "${BLUE}${BOLD}====================================================================${RESET}"
-echo
 echo "${GREEN}${BOLD}Starting IAP Configuration Lab${RESET}"
 echo
 
