@@ -115,17 +115,6 @@ echo "${CYAN}${BOLD}➤ Service Account Information${RESET}"
 echo "${GREEN}Service Account: $PROJECT_NUMBER-compute@developer.gserviceaccount.com${RESET}"
 echo
 
-# Completion Message
-echo "${BLUE}${BOLD}====================================================================${RESET}"
-echo "${BLUE}${BOLD}               LAB COMPLETED SUCCESSFULLY                          ${RESET}"
-echo "${BLUE}${BOLD}====================================================================${RESET}"
-echo
-echo "${GREEN}${BOLD}Thank you for using Dr. Abhishek Cloud Tutorials!${RESET}"
-echo
-echo "${YELLOW}For more cloud tutorials and labs, visit:${RESET}"
-echo "${CYAN}https://www.youtube.com/@drabhishek.5460${RESET}"
-echo
-
 # Cleanup
 cd
 rm -f gsp* arc* shell* 2>/dev/null
