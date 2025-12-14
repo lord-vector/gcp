@@ -1,9 +1,5 @@
 
 
-export REPO_NAME='valkyrie-docker'
-export DOCKER_IMAGE='valkyrie-app'
-export TAG_NAME='v0.0.1'
-export ZONE='us-west1-b'
 export REGION="${ZONE%-*}"
 
 gcloud auth list
