@@ -24,8 +24,6 @@ RESET=`tput sgr0`
 
 #----------------------------------------------------start--------------------------------------------------#
 
-echo "${BG_CYAN}${BLACK}${BOLD}Welcome to Dr abhishek cloud Tutorial${RESET}"
-
 # Ask for zone input
 echo "${YELLOW}${BOLD}Please enter the zone value to export (e.g., us-central1-a):${RESET}"
 read ZONE
@@ -71,11 +69,7 @@ echo "${BG_GREEN}${BLACK}${BOLD}Congratulations For Completing The Lab !!!${RESE
 
 #---------------------------------------------------final-message---------------------------------------------------#
 
-echo "${BG_BLUE}${WHITE}${BOLD}Welcome to Dr. Abhishek Cloud Tutorials!${RESET}"
-echo "${CYAN}${BOLD}Check out more cloud lab walkthroughs and tutorials at:${RESET}"
-echo "${YELLOW}${BOLD}https://www.youtube.com/@drabhishek.5460/videos${RESET}"
-echo "${GREEN}${BOLD}If you found this helpful, don't forget to Like, Share, and Subscribe to the channel!${RESET}"
-echo "${MAGENTA}${BOLD}Thank you for learning with us — see you in the next cloud adventure!${RESET}"
+echo "${GREEN}${BOLD}Finished!${RESET}"
 
 #----------------------------------------------------cleanup---------------------------------------------------#
 
