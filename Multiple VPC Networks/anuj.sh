@@ -1,7 +1,5 @@
 #!/bin/bash
 # Google Cloud Networking Lab Setup
-# Expertly crafted by Dr. Abhishek Cloud
-
 
 BOLD=$(tput bold)
 UNDERLINE=$(tput smul)
@@ -23,13 +21,6 @@ BG_YELLOW=$(tput setab 3)
 BG_BLUE=$(tput setab 4)
 
 clear
-echo "${BG_BLUE}${BOLD}${WHITE}============================================${RESET}"
-echo "${BG_BLUE}${BOLD}${WHITE}  WELCOME TO DR ABHISHEK CLOUD TUTORIAL      ${RESET}"
-echo "${BG_BLUE}${BOLD}${WHITE}============================================${RESET}"
-echo ""
-echo "${CYAN}${BOLD}⚡ Expertly crafted by Dr. Abhishek Cloud${RESET}"
-echo "${YELLOW}${BOLD}📺 YouTube: ${UNDERLINE}https://www.youtube.com/@drabhishek.5460/videos${RESET}"
-echo ""
 
 # ======================
 #  ENVIRONMENT SETUP
@@ -172,10 +163,3 @@ echo ""
 echo "${BG_GREEN}${BOLD}${WHITE}============================================${RESET}"
 echo "${BG_GREEN}${BOLD}${WHITE}    LAB COMPLETE!          ${RESET}"
 echo "${BG_GREEN}${BOLD}${WHITE}============================================${RESET}"
-echo ""
-echo "${WHITE}${BOLD}🔍 Access your resources:${RESET}"
-echo "${YELLOW}https://console.cloud.google.com/networking/${RESET}"
-echo ""
-echo "${CYAN}${BOLD}💡 For more Google Cloud labs and tutorials:${RESET}"
-echo "${YELLOW}${BOLD}👉 ${UNDERLINE}https://www.youtube.com/@drabhishek.5460/videos${RESET}"
-echo "${GREEN}${BOLD}🔔 Don't forget to subscribe for daily cloud tutorials!${RESET}"
