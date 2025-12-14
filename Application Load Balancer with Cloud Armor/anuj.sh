@@ -148,7 +148,7 @@ sed -i s#IMAGE_HERE#$REGION-docker.pkg.dev/$DEVSHELL_PROJECT_ID/$REPO/$DCKR_IMG:
 
 # Step 13: Configuring Kubernetes cluster...
 echo "${YELLOW}${BOLD}Configuring Kubernetes cluster...${RESET}"
-gcloud container clusters get-credentials valkyrie-dev --zone $ZONE
+gcloud container clusters get-credentials valkyrie-prod --zone $ZONE
 
 # Step 14: Deploying application to Kubernetes...
 echo "${BLUE}${BOLD}Deploying application to Kubernetes...${RESET}"
