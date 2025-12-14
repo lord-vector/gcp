@@ -44,9 +44,7 @@ RANDOM_THANK_YOU=${THANK_YOU_MESSAGES[$RANDOM % ${#THANK_YOU_MESSAGES[@]}]}
 
 #----------------------------------------------------start--------------------------------------------------#
 
-echo "${CYAN}${BOLD}Welcome to Dr. Abhishek Cloud Tutorials${RESET}"
 echo "${RANDOM_BG_COLOR}${RANDOM_TEXT_COLOR}${BOLD}Starting Execution${RESET}"
-echo "${YELLOW}Subscribe here 👉 https://www.youtube.com/@drabhishek.5460/videos${RESET}"
 echo
 
 # ---------- defaults for the lab ----------
@@ -207,7 +205,6 @@ fi
 echo
 echo "${GREEN}${BOLD}Congrats — lab tasks attempted/completed (check GKE console to verify).${RESET}"
 echo "${CYAN}Deployed image: ${IMAGE_PATH}${RESET}"
-echo "${YELLOW}Subscribe here 👉 https://www.youtube.com/@drabhishek.5460/videos${RESET}"
 echo
 
 # Optional cleanup helper (disabled by default)
