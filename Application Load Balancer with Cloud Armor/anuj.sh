@@ -1,7 +1,10 @@
 
 
 export REGION="${ZONE%-*}"
-
+export REPO_NAME='valkyrie-docker'
+export DOCKER_IMAGE='valkyrie-app'
+export TAG_NAME='v0.0.1'
+export ZONE='us-west1-b'
 
 gcloud auth list
 source <(gsutil cat gs://cloud-training/gsp318/marking/setup_marking_v2.sh)
