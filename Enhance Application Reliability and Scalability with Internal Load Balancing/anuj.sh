@@ -1,11 +1,6 @@
 #!/bin/bash
 
 # Welcome message
-echo "=================================================="
-echo "Welcome to Dr. Abhishek Cloud Tutorial!"
-echo "Subscribe to the channel: https://www.youtube.com/@drabhishek.5460/videos"
-echo "=================================================="
-echo ""
 
 # Get user inputs for region and zone
 echo "=== Configuration Setup ==="
@@ -312,6 +307,3 @@ echo "1. SSH to utility VM: gcloud compute ssh utility-vm --zone=$UTILITY_ZONE"
 echo "2. Test load balancer: curl 10.10.30.5"
 echo "3. Test individual backends: curl $INSTANCE_1_IP and curl $INSTANCE_2_IP"
 echo ""
-echo "Thank you for following Dr. Abhishek Cloud Tutorial!"
-echo "Don't forget to subscribe: https://www.youtube.com/@drabhishek.5460/videos"
-echo "=================================================="
