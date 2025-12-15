@@ -1,217 +1,557 @@
 #!/bin/bash
 
-# Function to show spinner while commands run
-spinner() {
-    local pid=$!
-    local delay=0.25
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b"
+# Define color variables
+BLACK=`tput setaf 0`
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+YELLOW=`tput setaf 3`
+BLUE=`tput setaf 4`
+MAGENTA=`tput setaf 5`
+CYAN=`tput setaf 6`
+WHITE=`tput setaf 7`
+
+BG_BLACK=`tput setab 0`
+BG_RED=`tput setab 1`
+BG_GREEN=`tput setab 2`
+BG_YELLOW=`tput setab 3`
+BG_BLUE=`tput setab 4`
+BG_MAGENTA=`tput setab 5`
+BG_CYAN=`tput setab 6`
+BG_WHITE=`tput setab 7`
+
+BOLD=`tput bold`
+RESET=`tput sgr0`
+
+# Display welcome message
+print_welcome() {
+    clear
+    echo "${BG_BLUE}${BOLD}====================================================${RESET}"
+    echo "${BG_BLUE}${BOLD}       Start!     ${RESET}"
+    echo "${BG_BLUE}${BOLD}====================================================${RESET}"
+    echo
 }
 
-# Welcome message
+# Display completion message
+print_completion() {
+    echo
+    echo "${BG_GREEN}${BOLD}====================================================${RESET}"
+    echo "${BG_GREEN}${BOLD}       Lab Completed Successfully!                 ${RESET}"
+    echo "${BG_GREEN}${BOLD}====================================================${RESET}"
+    echo
+}
 
-# Fetch zone and region with fallback to prompt
-echo -n "Detecting default zone and region... "
-ZONE=$(gcloud compute project-info describe \
-  --format="value(commonInstanceMetadata.items[google-compute-default-zone])" 2>/dev/null)
-REGION=$(gcloud compute project-info describe \
-  --format="value(commonInstanceMetadata.items[google-compute-default-region])" 2>/dev/null)
-PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
-spinner
+print_welcome
 
-if [ -z "$ZONE" ]; then
-    echo "Could not detect default zone."
-    echo "Please enter your preferred zone (e.g., us-central1-a):"
-    read -p "Zone: " ZONE
-    REGION=${ZONE%-*}
-else
-    echo "Detected Zone: $ZONE"
-    echo "Detected Region: $REGION"
-fi
-echo ""
+# Get required variables from user
+read -p "${YELLOW}${BOLD}Enter your bucket name: ${RESET}" BUCKET
+read -p "${YELLOW}${BOLD}Enter your instance name: ${RESET}" INSTANCE
+read -p "${YELLOW}${BOLD}Enter your VPC name: ${RESET}" VPC
+read -p "${YELLOW}${BOLD}Enter your zone (e.g. us-central1-a): ${RESET}" ZONE
 
-# Create web instances
-echo "Creating web instances (web1, web2, web3)..."
-for i in {1..3}; do
-    echo -n "Creating web$i... "
-    gcloud compute instances create web$i \
-        --zone=$ZONE \
-        --machine-type=e2-small \
-        --tags=network-lb-tag \
-        --image-family=debian-12 \
-        --image-project=debian-cloud \
-        --metadata=startup-script='#!/bin/bash
-        apt-get update
-        apt-get install apache2 -y
-        service apache2 restart
-        echo "<h3>Web Server: web'$i'</h3>" | tee /var/www/html/index.html' > /dev/null 2>&1 &
-    spinner
-    echo "Done"
-done
-echo ""
+export BUCKET
+export INSTANCE
+export VPC
+export ZONE
 
-# Create firewall rule
-echo -n "Creating firewall rule for network load balancer... "
-gcloud compute firewall-rules create www-firewall-network-lb \
-    --allow tcp:80 \
-    --target-tags network-lb-tag > /dev/null 2>&1 &
-spinner
-echo "Done"
-echo ""
+echo "${GREEN}${BOLD}Variables set successfully!${RESET}"
+echo
 
-# Network Load Balancer Setup
-echo "Setting up Network Load Balancer..."
-echo -n "Creating static IP address... "
-gcloud compute addresses create network-lb-ip-1 \
-    --region=$REGION > /dev/null 2>&1 &
-spinner
-echo "Done"
+echo "${BG_MAGENTA}${BOLD}Starting Lab Execution${RESET}"
 
-echo -n "Creating health check... "
-gcloud compute http-health-checks create basic-check > /dev/null 2>&1 &
-spinner
-echo "Done"
+gcloud auth list
 
-echo -n "Creating target pool... "
-gcloud compute target-pools create www-pool \
-    --region=$REGION \
-    --http-health-check basic-check > /dev/null 2>&1 &
-spinner
-echo "Done"
+export PROJECT_ID=$(gcloud config get-value project)
 
-echo -n "Adding instances to target pool... "
-gcloud compute target-pools add-instances www-pool \
-    --instances web1,web2,web3 \
-    --zone=$ZONE > /dev/null 2>&1 &
-spinner
-echo "Done"
+gcloud config set compute/zone $ZONE
+export REGION=${ZONE%-*}
+gcloud config set compute/region $REGION
 
-echo -n "Creating forwarding rule... "
-gcloud compute forwarding-rules create www-rule \
-    --region=$REGION \
-    --ports 80 \
-    --address network-lb-ip-1 \
-    --target-pool www-pool > /dev/null 2>&1 &
-spinner
-echo "Done"
+export PROJECT_ID=$DEVSHELL_PROJECT_ID
 
-IPADDRESS=$(gcloud compute forwarding-rules describe www-rule \
-    --region=$REGION \
-    --format="json" | jq -r .IPAddress)
-echo "Network Load Balancer IP: $IPADDRESS"
-echo ""
+instances_output=$(gcloud compute instances list --format="value(id)")
 
-# HTTP Load Balancer Setup
-echo "Setting up HTTP Load Balancer..."
-echo -n "Creating instance template... "
-gcloud compute instance-templates create lb-backend-template \
-   --region=$REGION \
-   --network=default \
-   --subnet=default \
-   --tags=allow-health-check \
-   --machine-type=e2-medium \
-   --image-family=debian-12 \
-   --image-project=debian-cloud \
-   --metadata=startup-script='#!/bin/bash
-     apt-get update
-     apt-get install apache2 -y
-     a2ensite default-ssl
-     a2enmod ssl
-     vm_hostname="$(curl -H "Metadata-Flavor:Google" \
-     http://169.254.169.254/computeMetadata/v1/instance/name)"
-     echo "Page served from: $vm_hostname" | \
-     tee /var/www/html/index.html
-     systemctl restart apache2' > /dev/null 2>&1 &
-spinner
-echo "Done"
+# Read the instance IDs into variables
+IFS=$'\n' read -r -d '' instance_id_1 instance_id_2 <<< "$instances_output"
 
-echo -n "Creating managed instance group... "
-gcloud compute instance-groups managed create lb-backend-group \
-   --template=lb-backend-template \
-   --size=2 \
-   --zone=$ZONE > /dev/null 2>&1 &
-spinner
-echo "Done"
+# Output instance IDs with custom name
+export INSTANCE_ID_1=$instance_id_1
+export INSTANCE_ID_2=$instance_id_2
 
-echo -n "Creating health check firewall rule... "
-gcloud compute firewall-rules create fw-allow-health-check \
-  --network=default \
-  --action=allow \
-  --direction=ingress \
-  --source-ranges=130.211.0.0/22,35.191.0.0/16 \
-  --target-tags=allow-health-check \
-  --rules=tcp:80 > /dev/null 2>&1 &
-spinner
-echo "Done"
+echo "$instance_id_1"
+echo "$instance_id_2"
 
-echo -n "Creating global IPv4 address... "
-gcloud compute addresses create lb-ipv4-1 \
-  --ip-version=IPV4 \
-  --global > /dev/null 2>&1 &
-spinner
-echo "Done"
+touch main.tf
+touch variables.tf
+mkdir modules
+cd modules
+mkdir instances
+cd instances
+touch instances.tf
+touch outputs.tf
+touch variables.tf
+cd ..
+mkdir storage
+cd storage
+touch storage.tf
+touch outputs.tf
+touch variables.tf
+cd
 
-LB_IP=$(gcloud compute addresses describe lb-ipv4-1 \
-  --format="get(address)" \
-  --global)
-echo "HTTP Load Balancer IP: $LB_IP"
+cat > variables.tf <<EOF_CP
+variable "region" {
+ default = "$REGION"
+}
 
-echo -n "Creating HTTP health check... "
-gcloud compute health-checks create http http-basic-check \
-  --port 80 > /dev/null 2>&1 &
-spinner
-echo "Done"
+variable "zone" {
+ default = "$ZONE"
+}
 
-echo -n "Creating backend service... "
-gcloud compute backend-services create web-backend-service \
-  --protocol=HTTP \
-  --port-name=http \
-  --health-checks=http-basic-check \
-  --global > /dev/null 2>&1 &
-spinner
-echo "Done"
+variable "project_id" {
+ default = "$PROJECT_ID"
+}
+EOF_CP
 
-echo -n "Adding backend to service... "
-gcloud compute backend-services add-backend web-backend-service \
-  --instance-group=lb-backend-group \
-  --instance-group-zone=$ZONE \
-  --global > /dev/null 2>&1 &
-spinner
-echo "Done"
+cat > main.tf <<EOF_CP
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+      version = "4.53.0"
+    }
+  }
+}
 
-echo -n "Creating URL map... "
-gcloud compute url-maps create web-map-http \
-    --default-service web-backend-service > /dev/null 2>&1 &
-spinner
-echo "Done"
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+}
 
-echo -n "Creating target HTTP proxy... "
-gcloud compute target-http-proxies create http-lb-proxy \
-    --url-map web-map-http > /dev/null 2>&1 &
-spinner
-echo "Done"
+module "instances" {
+  source     = "./modules/instances"
+}
+EOF_CP
 
-echo -n "Creating forwarding rule... "
-gcloud compute forwarding-rules create http-content-rule \
-    --address=lb-ipv4-1 \
-    --global \
-    --target-http-proxy=http-lb-proxy \
-    --ports=80 > /dev/null 2>&1 &
-spinner
-echo "Done"
-echo ""
+terraform init 
 
-# Completion message
-echo "============================================="
-echo " Setup Complete!                            "
-echo "============================================="
-echo " Network Load Balancer IP: $IPADDRESS"
-echo " HTTP Load Balancer IP: $LB_IP"
-echo "============================================="
+cd modules/instances/
+
+cat > instances.tf <<EOF_CP
+resource "google_compute_instance" "tf-instance-1" {
+  name         = "tf-instance-1"
+  machine_type = "n1-standard-1"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+ network = "default"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+
+resource "google_compute_instance" "tf-instance-2" {
+  name         = "tf-instance-2"
+  machine_type = "n1-standard-1"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+ network = "default"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+EOF_CP
+
+cd ~
+
+terraform import module.instances.google_compute_instance.tf-instance-1 $INSTANCE_ID_1
+terraform import module.instances.google_compute_instance.tf-instance-2 $INSTANCE_ID_2
+
+terraform plan
+terraform apply --auto-approve
+
+cd modules/storage/
+
+cat > storage.tf <<EOF_CP
+resource "google_storage_bucket" "storage-bucket" {
+  name          = "$BUCKET"
+  location      = "US"
+  force_destroy = true
+  uniform_bucket_level_access = true
+}
+EOF_CP
+
+cd ~
+
+cat > main.tf <<EOF_CP
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+      version = "4.53.0"
+    }
+  }
+}
+
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+}
+
+module "instances" {
+  source     = "./modules/instances"
+}
+
+module "storage" {
+  source     = "./modules/storage"
+}
+EOF_CP
+
+terraform init
+terraform apply --auto-approve
+
+cat > main.tf <<EOF_CP
+terraform {
+  backend "gcs" {
+    bucket  = "$BUCKET"
+    prefix  = "terraform/state"
+  }
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+      version = "4.53.0"
+    }
+  }
+}
+
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+}
+
+module "instances" {
+  source     = "./modules/instances"
+}
+
+module "storage" {
+  source     = "./modules/storage"
+}
+EOF_CP
+
+echo "yes" | terraform init
+
+cd modules/instances/
+
+cat > instances.tf <<EOF_CP
+resource "google_compute_instance" "tf-instance-1" {
+  name         = "tf-instance-1"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+ network = "default"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+
+resource "google_compute_instance" "tf-instance-2" {
+  name         = "tf-instance-2"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+ network = "default"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+
+resource "google_compute_instance" "$INSTANCE" {
+  name         = "$INSTANCE"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+ network = "default"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+EOF_CP
+cd ~
+
+terraform init
+terraform apply --auto-approve
+
+terraform taint module.instances.google_compute_instance.$INSTANCE
+
+terraform plan
+terraform apply --auto-approve
+
+cd modules/instances/
+
+cat > instances.tf <<EOF_CP
+resource "google_compute_instance" "tf-instance-1" {
+  name         = "tf-instance-1"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+ network = "default"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+
+resource "google_compute_instance" "tf-instance-2" {
+  name         = "tf-instance-2"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+ network = "default"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+EOF_CP
+
+cd ~
+terraform apply --auto-approve
+
+cat > main.tf <<EOF_CP
+terraform {
+  backend "gcs" {
+    bucket  = "$BUCKET"
+    prefix  = "terraform/state"
+  }
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+      version = "4.53.0"
+    }
+  }
+}
+
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+}
+
+module "instances" {
+  source     = "./modules/instances"
+}
+
+module "storage" {
+  source     = "./modules/storage"
+}
+
+module "vpc" {
+    source  = "terraform-google-modules/network/google"
+    version = "~> 6.0.0"
+
+    project_id   = "$PROJECT_ID"
+    network_name = "$VPC"
+    routing_mode = "GLOBAL"
+
+    subnets = [
+        {
+            subnet_name           = "subnet-01"
+            subnet_ip             = "10.10.10.0/24"
+            subnet_region         = "$REGION"
+        },
+        {
+            subnet_name           = "subnet-02"
+            subnet_ip             = "10.10.20.0/24"
+            subnet_region         = "$REGION"
+            subnet_private_access = "true"
+            subnet_flow_logs      = "true"
+            description           = "Final"
+        },
+    ]
+}
+EOF_CP
+
+terraform init
+terraform apply --auto-approve
+
+cd modules/instances/
+cat > instances.tf <<EOF_CP
+resource "google_compute_instance" "tf-instance-1" {
+  name         = "tf-instance-1"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+    network = "$VPC"
+    subnetwork = "subnet-01"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+
+resource "google_compute_instance" "tf-instance-2" {
+  name         = "tf-instance-2"
+  machine_type = "e2-standard-2"
+  zone         = "$ZONE"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+    network = "$VPC"
+    subnetwork = "subnet-02"
+  }
+  metadata_startup_script = <<-EOT
+        #!/bin/bash
+    EOT
+  allow_stopping_for_update = true
+}
+EOF_CP
+
+cd ~
+terraform init
+terraform apply --auto-approve
+
+cat > main.tf <<EOF_CP
+terraform {
+  backend "gcs" {
+    bucket  = "$BUCKET"
+    prefix  = "terraform/state"
+  }
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+      version = "4.53.0"
+    }
+  }
+}
+
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+}
+
+module "instances" {
+  source     = "./modules/instances"
+}
+
+module "storage" {
+  source     = "./modules/storage"
+}
+
+module "vpc" {
+    source  = "terraform-google-modules/network/google"
+    version = "~> 6.0.0"
+
+    project_id   = "$PROJECT_ID"
+    network_name = "$VPC"
+    routing_mode = "GLOBAL"
+
+    subnets = [
+        {
+            subnet_name           = "subnet-01"
+            subnet_ip             = "10.10.10.0/24"
+            subnet_region         = "$REGION"
+        },
+        {
+            subnet_name           = "subnet-02"
+            subnet_ip             = "10.10.20.0/24"
+            subnet_region         = "$REGION"
+            subnet_private_access = "true"
+            subnet_flow_logs      = "true"
+            description           = "Final"
+        },
+    ]
+}
+
+resource "google_compute_firewall" "tf-firewall"{
+  name    = "tf-firewall"
+  network = "projects/$PROJECT_ID/global/networks/$VPC"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_tags = ["web"]
+  source_ranges = ["0.0.0.0/0"]
+}
+EOF_CP
+
+terraform init
+terraform apply --auto-approve
+
+print_completion
